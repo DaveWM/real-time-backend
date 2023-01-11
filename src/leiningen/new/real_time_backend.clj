@@ -1,15 +1,13 @@
 (ns leiningen.new.real-time-backend
   (:require [leiningen.new.templates :refer [renderer name-to-path ->files]]
-            [leiningen.core.main :as main]
-            [me.raynes.fs :as fs]))
+            [leiningen.core.main :as main]))
 
 (def root-files
-  (->> (fs/list-dir "resources/leiningen/new/real_time_backend")
-       (filter fs/file?)))
+  ["LICENSE" "project.clj" "README.md"])
 
 (def src-files
-  (->> (fs/list-dir "resources/leiningen/new/real_time_backend/src")
-       (filter fs/file?)))
+  ["config.clj" "core.clj" "db.clj" "server.clj" "subscriptions.clj"])
+
 
 (def render (renderer "real-time-backend"))
 
@@ -22,8 +20,8 @@
     (apply ->files data
              (concat (->> root-files
                           (map (fn [f]
-                                 [(fs/base-name f) (render (fs/base-name f) data)])))
+                                 [f (render f data)])))
                      (->> src-files
                           (map (fn [f]
-                                 [(str "src/{{sanitized}}/" (fs/base-name f))
-                                  (render (str "src/" (fs/base-name f)) data)])))))))
+                                 [(str "src/{{sanitized}}/" f)
+                                  (render (str "src/" f) data)])))))))
